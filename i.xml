@@ -1,0 +1,366 @@
+// подключение системных библиотек
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+// подключение библиотек СУБП
+using DocsVision.Workflow.Objects;
+using DocsVision.Workflow.Runtime;
+using DocsVision.BackOffice.CardLib.CardDefs;
+using DocsVision.Platform.ObjectModel;
+using DocsVision.BackOffice.ObjectModel;
+
+namespace DVScriptHost
+{
+   class DVScript
+   {
+       
+		//Типы договора
+        private Guid TYPE_EXPENSE_CONTRACT = new Guid("5F0B4ED2-E7E0-4A81-B5F4-E73BAD330831");//Расходный
+        private Guid TYPE_INCOME_CONTRACT = new Guid("B5288FDE-844E-4D36-BBF0-1899BFB0EF2F");//Доходный
+
+        //Виды договора
+        private Guid VIEW_ANY = new Guid("11111111-1111-1111-1111-111111111111");//Любой
+        private Guid VIEW_SUPPLY = new Guid("6d7d2bd9-d0cf-4084-979b-30fdd15b8e67");//Поставка
+        private Guid VIEW_EXAMPLE_1 = new Guid("dc1470e9-2416-418c-b1ea-fb848a387a1a");//Пример №1
+        private Guid VIEW_GOODS_SUPPLY = new Guid("827bbe09-a59e-4778-aa0d-02e8e14b869c");//Поставка товара
+        private Guid VIEW_SUPPLY_PRINCIPAL = new Guid("58265c94-c4c5-4389-9e82-d383af103f38");//Поставка (с комитентом (принципалом) на закупку)
+        private Guid VIEW_FINANCING = new Guid("f74518aa-b14a-4267-b52e-08aededfda5e");//Финансирование
+        private Guid VIEW_SUPPLY_AGENT = new Guid("74d1774b-bdbb-4174-82ca-e48da7d73c46");//Поставка (с комиссионером (агентом) на закупку)
+        private Guid VIEW_COMMERCIAL_CONCESSION_AGREEMENT = new Guid("a80d5f32-b51f-499e-b078-05e1e562fdfc");//Договор коммерческой концессии
+        private Guid VIEW_INVESTMENTS = new Guid("00000000-0000-0000-0000-000000000000");//Инвестиции
+        private Guid VIEW_LICENSE_AGREEMENT = new Guid("00000000-0000-0000-0000-000000000000");//Лицензионный договор
+        private Guid VIEW_PROPERTY_TRUST_AGREEMENT = new Guid("00000000-0000-0000-0000-000000000000");//Договор доверительного управления имуществом,
+        private Guid VIEW_CONSULTING = new Guid("00000000-0000-0000-0000-000000000000");//Консалтинг
+
+        //Формы договора
+        private int FORM_TYPICAL = 2;//Типовой
+        private int FORM_NOT_TYPICAL = 1;//Не типовой
+        private int FORM_INVOICE_AGREEMENT = 3;//Счет-договор
+        
+        //Валюта договора
+        private Guid CURRENCY_ANY = new Guid("11111111-1111-1111-1111-111111111111");//Любой
+        private Guid CURRENCY_DOLLAR = new Guid("169D893C-57E2-4911-BB7C-35E7E179EEF7");//Доллары
+        private Guid CURRENCY_RUB = new Guid("00000000-0000-0000-0000-000000000000");//Рубли
+
+        //Правило сравнения сумм
+        private int SUM_ANY  = -1;//Любой
+        private int SUM_LESS = 0;//Меньше
+        private int SUM_MORE_EQUAL  = 1;//Больше либо равно
+
+
+        private ProcessInfo _process;
+        private ObjectContext _context;
+        
+        public void Execute (ProcessInfo process, PassState passInfo, ObjectContext context)
+        {
+            _process = process;
+            _context = context;
+            try
+            {
+                var docId = GetVarGuid("Согласуемый документ");
+                if (!AreCorrectProps(docId, "Юристы"))
+                    return;
+                var apps = process.GetVariableByName("Согласующие");
+
+                var docData = process.Session.CardManager.GetCardData(docId);
+                var docMainInfoRow = docData.Sections[CardDocument.MainInfo.ID].FirstRow;
+            
+                var typeId = docMainInfoRow.GetGuid("DDS");
+                if (!typeId.HasValue)
+                    return;
+
+                foreach (var item in GetDictionaryItems("Согласование договора. Юристы."))
+                {
+                    var iId = item.ItemCard.GetObjectId();
+                    var iData = process.Session.CardManager.GetCardData(iId);
+                    var itemMainInfoRow = iData.Sections[CardBaseUniversalItem.MainInfo.ID].FirstRow;
+                    var contractId = itemMainInfoRow.GetGuid("Contract");
+                    if (!contractId.HasValue || !contractId.Value.Equals(typeId.Value))
+                        continue;
+                    apps.Values.Clear();
+                    var sectionData = iData.Sections[iData.Type.Sections["FDP_employer"].Id];
+                    foreach (var data in sectionData.Rows)
+                    {
+                        var emplGuid = data.GetGuid("Employer");
+                        if (!emplGuid.HasValue)
+                            continue;
+                    
+                        apps.Values.AddNew().Value = emplGuid;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                 // запись в журнал ошибки исполнения
+                 process.LogMessage("Ошибка выполнения скрипта:" + ex.Message);
+            }
+			throw new Exception();
+        }
+		
+    	private List<object> GetRules(string bpName)
+        {
+            List<object> result = new List<object>();
+            int[] rules2;
+            
+            // Все критерии выбора маршрута
+            var rules1 = new Dictionary<int, object[]>(){
+                {
+                    1, new object[] {
+                        FORM_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_ANY
+                        },
+                        new int[]{SUM_LESS, 1000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    2, new object[] {
+                        FORM_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_ANY
+                        },
+                        new int[]{SUM_MORE_EQUAL, 1000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    3, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_ANY
+                        },
+                        new int[]{SUM_MORE_EQUAL, 1000000},
+                        CURRENCY_RUB
+                    }
+
+                },
+                {
+                    4, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_INCOME_CONTRACT, 
+                        new Guid[] {
+                            VIEW_GOODS_SUPPLY,
+                            VIEW_SUPPLY_PRINCIPAL,
+                            VIEW_FINANCING,
+                            VIEW_SUPPLY_AGENT,
+                            VIEW_COMMERCIAL_CONCESSION_AGREEMENT
+                        },
+                        new int[]{SUM_MORE_EQUAL, 10000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    5, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_FINANCING
+                        },
+                        new int[]{SUM_MORE_EQUAL, 10000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    6, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_INVESTMENTS
+                        },
+                        new int[]{SUM_MORE_EQUAL, 100000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    7, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_LICENSE_AGREEMENT
+                        },
+                        new int[]{SUM_MORE_EQUAL, 5000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    8, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_PROPERTY_TRUST_AGREEMENT,
+                            VIEW_CONSULTING
+                        },
+                        new int[]{SUM_MORE_EQUAL, 50000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    9, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_CONSULTING
+                        },
+                        new int[]{SUM_ANY},
+                        CURRENCY_ANY
+                    }
+                },
+                {
+                    10, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_ANY
+                        },
+                        new int[]{SUM_ANY},
+                        CURRENCY_ANY
+                    }
+                },
+                {
+                    11, new object[] {
+                        FORM_INVOICE_AGREEMENT, 
+                        TYPE_EXPENSE_CONTRACT, 
+                        new Guid[] {
+                            VIEW_ANY
+                        },
+                        new int[]{SUM_LESS, 50000},
+                        CURRENCY_ANY
+                    }
+                },
+                {
+                    12, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_INCOME_CONTRACT, 
+                        new Guid[] {
+                            VIEW_FINANCING
+                        },
+                        new int[]{SUM_LESS, 10000000},
+                        CURRENCY_RUB
+                    }
+                },
+                {
+                    13, new object[] {
+                        FORM_NOT_TYPICAL, 
+                        TYPE_INCOME_CONTRACT, 
+                        new Guid[] {
+                            VIEW_SUPPLY,
+                            VIEW_EXAMPLE_1,
+                            VIEW_GOODS_SUPPLY,
+                            VIEW_SUPPLY_PRINCIPAL,
+                            VIEW_SUPPLY_AGENT,
+                            VIEW_COMMERCIAL_CONCESSION_AGREEMENT
+                        },
+                        new int[]{SUM_LESS, 10000000},
+                        CURRENCY_RUB
+                    }
+                }
+            };
+            
+            switch (bpName) {
+                case "Руководитель Ответственного менеджера": 
+                    rules2 = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}; break;
+                case "ФБП": 
+                    rules2 = new int[] {1, 9, 10, 11, 12, 13}; break;
+                case "Юристы": 
+                    rules2 = new int[] {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}; break;
+                case "Бухгалтерия": 
+                    rules2 = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}; break;
+                case "Казначейство": 
+                    rules2 = new int[] {1, 2, 3, 4, 5, 6, 9, 10, 11, 12}; break;
+                case "Отдел бюджетирования": 
+                    rules2 = new int[] {2, 3, 6, 7, 8}; break;
+                case "Корпоративный секретарь": 
+                    rules2 = new int[] {5, 6, 7, 8}; break;
+                case "Фин. директор": 
+                    rules2 = new int[] {4, 5, 6, 7, 8}; break;
+                default: rules2 = new int[] {}; break;
+            }
+            
+            foreach (var index in rules2) {
+                result.Add(rules1[index]);
+            }
+            
+            return result;
+        }
+        
+        private bool AreCorrectProps(Guid docId, string bpName)
+        {
+            bool result = false;
+            
+            var docData = _process.Session.CardManager.GetCardData(docId);
+            var docMainInfoRow = docData.Sections[CardDocument.MainInfo.ID].FirstRow;
+            
+            var docFormId = docMainInfoRow.GetInt32("DogForm");
+            var viewId = docMainInfoRow.GetGuid("DDS");
+            var typeId = docMainInfoRow.GetGuid("Kind");
+            var sum = docMainInfoRow.GetDouble("OplatSumm");
+            var currencyId = docMainInfoRow.GetGuid("Dollars");
+            
+            if (!docFormId.HasValue)
+                return false;
+            if (!viewId.HasValue)
+                return false;
+            if (!typeId.HasValue)
+                return false;
+            if (!sum.HasValue)
+                return false;
+            //if (!currencyId.HasValue)
+            //    return false;
+
+            var rules = GetRules(bpName);
+            foreach (object[] ruleData in rules)
+            {
+                if (!ruleData[0].Equals(docFormId))
+                    continue;
+                if (!ruleData[1].Equals(typeId))
+                    continue;
+                var viewData = ruleData[2] as Guid[] ?? Array.Empty<Guid>();
+                if (!viewData.Contains(viewId.Value) && !viewData.Contains(VIEW_ANY))
+                    continue;
+                //if (!ruleData[4].Equals(currencyId) && !ruleData[4].Equals(CURRENCY_ANY))
+                //    continue;
+                var sumData = ruleData[3] as int[];
+                if (!sumData[0].Equals(SUM_ANY) && !(sumData[0].Equals(SUM_LESS) ?sum < sumData[1] :sum >= sumData[1]))
+                    continue;
+                
+                result = true;
+                break;
+            }
+			
+			return result;
+		}
+
+        private Guid GetVarGuid(string varName)
+        {
+            string variable = "" + _process.GetVariableByName(varName).Value;
+            return new Guid(variable.Substring(variable.Length - 38));
+        }
+        
+        private List<BaseUniversalItem> GetDictionaryItems(string name)
+        {
+            List<BaseUniversalItem> result = new List<BaseUniversalItem>();
+            List<string> names = new List<string>();
+            BaseUniversal dictionary = _context.GetObject<BaseUniversal>(RefBaseUniversal.ID);
+            BaseUniversalItemType regType = null;
+            foreach (BaseUniversalItemType type in dictionary.ItemTypes)
+                if (type.Name == name) // узел справочника
+                {
+                    regType = type;
+                    break;
+                }
+            if (regType != null)
+                foreach (BaseUniversalItem dictionaryString in regType.Items)                    
+                    if (!names.Contains(dictionaryString.Name))
+                    {
+                        result.Add(dictionaryString);
+                        names.Add(dictionaryString.Name);
+                    }
+            return result;
+        }
+   }
+}  
