@@ -7,11 +7,11 @@ using namespace std;
 
 const int namesCount = 5;
 const string names[namesCount] = {
-	"Выполнить верстку сайта ",
-	"Написать телеграмм-бот  ",
-	"Создать интернет-магазин", 	
-	"Разработать 3д-игру     ",
-	"Нарисовать логотип      "
+	"Р’С‹РїРѕР»РЅРёС‚СЊ РІРµСЂСЃС‚РєСѓ СЃР°Р№С‚Р° ",
+	"РќР°РїРёСЃР°С‚СЊ С‚РµР»РµРіСЂР°РјРј-Р±РѕС‚  ",
+	"РЎРѕР·РґР°С‚СЊ РёРЅС‚РµСЂРЅРµС‚-РјР°РіР°Р·РёРЅ", 	
+	"Р Р°Р·СЂР°Р±РѕС‚Р°С‚СЊ 3Рґ-РёРіСЂСѓ     ",
+	"РќР°СЂРёСЃРѕРІР°С‚СЊ Р»РѕРіРѕС‚РёРї      "
 };
 
 int getRandom(int min, int max) {
@@ -20,9 +20,9 @@ int getRandom(int min, int max) {
 
 class Order {
 private:
-	string name; //название
-	float price; // цена
-	int timeWork; //время выполнения
+	string name; //РЅР°Р·РІР°РЅРёРµ
+	float price; // С†РµРЅР°
+	int timeWork; //РІСЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ
 public:
 	Order();
 	void print();
@@ -32,15 +32,15 @@ public:
 };
 
 Order::Order() {
-	name = names[getRandom(0, namesCount - 1 )]; //название
-	price = getRandom(10000, 30000); // цена
-	timeWork = getRandom(3, 10); //время выполнения
+	name = names[getRandom(0, namesCount - 1 )]; //РЅР°Р·РІР°РЅРёРµ
+	price = getRandom(10000, 30000); // С†РµРЅР°
+	timeWork = getRandom(3, 10); //РІСЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ
 }
 void Order::print() {
 	cout << "---------------------------------" << endl;
-	cout << "Заказ: " << name << "  |  ";
-	cout << "Цена: " << price << "  |  ";
-	cout << "Время выполнения: " << timeWork << "  |  " << endl;
+	cout << "Р—Р°РєР°Р·: " << name << "  |  ";
+	cout << "Р¦РµРЅР°: " << price << "  |  ";
+	cout << "Р’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ: " << timeWork << "  |  " << endl;
 }
 
 void Order::setTime( int time ) {
@@ -57,11 +57,11 @@ float Order::getPrice() {
 
 class Company {
 private:
-	string name; //название
-	float money; //баланс денег
-	int employees; //количество работников
-	int orders; //количество выполненных заказов
-	float salary; //зарплата 1 работника
+	string name; //РЅР°Р·РІР°РЅРёРµ
+	float money; //Р±Р°Р»Р°РЅСЃ РґРµРЅРµРі
+	int employees; //РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚РЅРёРєРѕРІ
+	int orders; //РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РїРѕР»РЅРµРЅРЅС‹С… Р·Р°РєР°Р·РѕРІ
+	float salary; //Р·Р°СЂРїР»Р°С‚Р° 1 СЂР°Р±РѕС‚РЅРёРєР°
 public:
 	Company();
 	void print();
@@ -72,26 +72,26 @@ public:
 };
 
 Company::Company() {
-	cout << "Название компании: ";
-	cin >> name; //имя введено с клавиатуры
-	money = 0;     //пока на счету нет ни рубля
-	employees = 1;//хотя бы 1 работник есть, он же - директор
-	orders = 0;//заказов еще не выполняли
-	cout << "Зарплата: ";
-	cin >> salary; //зарплата 1 работника
+	cout << "РќР°Р·РІР°РЅРёРµ РєРѕРјРїР°РЅРёРё: ";
+	cin >> name; //РёРјСЏ РІРІРµРґРµРЅРѕ СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+	money = 0;     //РїРѕРєР° РЅР° СЃС‡РµС‚Сѓ РЅРµС‚ РЅРё СЂСѓР±Р»СЏ
+	employees = 1;//С…РѕС‚СЏ Р±С‹ 1 СЂР°Р±РѕС‚РЅРёРє РµСЃС‚СЊ, РѕРЅ Р¶Рµ - РґРёСЂРµРєС‚РѕСЂ
+	orders = 0;//Р·Р°РєР°Р·РѕРІ РµС‰Рµ РЅРµ РІС‹РїРѕР»РЅСЏР»Рё
+	cout << "Р—Р°СЂРїР»Р°С‚Р°: ";
+	cin >> salary; //Р·Р°СЂРїР»Р°С‚Р° 1 СЂР°Р±РѕС‚РЅРёРєР°
 }
 
 void Company::print() {
-	cout << "Компания: " << name << endl;
-	cout << "Баланс: " << money << endl;
-	cout << "Количество работников: " << employees << endl;
-	cout << "Выполнено заказов: " << orders << endl;
-	cout << "Зарплата: " << salary << endl;
+	cout << "РљРѕРјРїР°РЅРёСЏ: " << name << endl;
+	cout << "Р‘Р°Р»Р°РЅСЃ: " << money << endl;
+	cout << "РљРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚РЅРёРєРѕРІ: " << employees << endl;
+	cout << "Р’С‹РїРѕР»РЅРµРЅРѕ Р·Р°РєР°Р·РѕРІ: " << orders << endl;
+	cout << "Р—Р°СЂРїР»Р°С‚Р°: " << salary << endl;
 }
 
 bool Company::doOrder( Order* currentOrder )
 {
-	cout << "Выполняю заказ: " << endl;
+	cout << "Р’С‹РїРѕР»РЅСЏСЋ Р·Р°РєР°Р·: " << endl;
 	currentOrder->print();
 	
 	currentOrder->setTime(currentOrder->getTime() - 1 * employees);
@@ -99,12 +99,12 @@ bool Company::doOrder( Order* currentOrder )
 
 	if (currentOrder->getTime() > 0)
 	{
-		cout << "До окончания выполнения заказа осталось: " << currentOrder->getTime() << " дн." << endl;
+		cout << "Р”Рѕ РѕРєРѕРЅС‡Р°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РєР°Р·Р° РѕСЃС‚Р°Р»РѕСЃСЊ: " << currentOrder->getTime() << " РґРЅ." << endl;
 		result = false;
 	}
 	else
 	{
-		cout << "Заказ выполнен"<<endl;
+		cout << "Р—Р°РєР°Р· РІС‹РїРѕР»РЅРµРЅ"<<endl;
 		money += currentOrder->getPrice();
 		orders++;
 		result = true;
@@ -117,7 +117,7 @@ bool Company::paySalary()
 {
 	float summa = salary * employees;
 	money -= summa;
-	cout << "!!!Выплачена зарплата!!! "<< summa<<endl;
+	cout << "!!!Р’С‹РїР»Р°С‡РµРЅР° Р·Р°СЂРїР»Р°С‚Р°!!! "<< summa<<endl;
 	if (money >= 0)
 		return true;
 	else
@@ -127,12 +127,12 @@ bool Company::paySalary()
 void Company::hireEmploees()
 {
 	int count;
-	cout << "Сколько нанять новых работников? ";
+	cout << "РЎРєРѕР»СЊРєРѕ РЅР°РЅСЏС‚СЊ РЅРѕРІС‹С… СЂР°Р±РѕС‚РЅРёРєРѕРІ? ";
 	cin >> count;
 
 	employees += count;
 	if (count > 0)
-		cout << "!!!Наняли работников!!!" << endl;
+		cout << "!!!РќР°РЅСЏР»Рё СЂР°Р±РѕС‚РЅРёРєРѕРІ!!!" << endl;
 }
 float Company::getMoney() {
 	return money;
@@ -142,7 +142,7 @@ int main()
 {
 	system("chcp 1251>nul");
 	srand(time(0));
-	cout << "Привет! Сегодня у тебя есть шанс создать и развить собственную IT-компанию." << endl;
+	cout << "РџСЂРёРІРµС‚! РЎРµРіРѕРґРЅСЏ Сѓ С‚РµР±СЏ РµСЃС‚СЊ С€Р°РЅСЃ СЃРѕР·РґР°С‚СЊ Рё СЂР°Р·РІРёС‚СЊ СЃРѕР±СЃС‚РІРµРЅРЅСѓСЋ IT-РєРѕРјРїР°РЅРёСЋ." << endl;
 	Company myCompany;
 	
 	int day = 1;
@@ -155,7 +155,7 @@ int main()
 	while ( gameState == 0 )
 	{
 		system("cls");
-		cout << "День " << day << endl << endl;
+		cout << "Р”РµРЅСЊ " << day << endl << endl;
 
 		if (day % 15 == 0)
 		{
@@ -178,15 +178,15 @@ int main()
 
 			if (currentOrderNumber == -1)
 			{
-				cout << "Список заказов: " << endl;
+				cout << "РЎРїРёСЃРѕРє Р·Р°РєР°Р·РѕРІ: " << endl;
 
 				for (int i = 0; i < orderCount; i++)
 				{
 					orderList[i].print();
-					cout << "Номер заказа: " << i << endl;
+					cout << "РќРѕРјРµСЂ Р·Р°РєР°Р·Р°: " << i << endl;
 				}
 
-				cout << "Выберите заказ из списка: " << endl;
+				cout << "Р’С‹Р±РµСЂРёС‚Рµ Р·Р°РєР°Р· РёР· СЃРїРёСЃРєР°: " << endl;
 				cin >> currentOrderNumber;
 			}
 
@@ -203,9 +203,9 @@ int main()
 	}
 
 	if (gameState == 1)
-		cout << "Поздравляем! Вы миллионер!" << endl;
+		cout << "РџРѕР·РґСЂР°РІР»СЏРµРј! Р’С‹ РјРёР»Р»РёРѕРЅРµСЂ!" << endl;
 	else
-		cout << "Вы банкрот! Попробуйте еще раз..." << endl;
+		cout << "Р’С‹ Р±Р°РЅРєСЂРѕС‚! РџРѕРїСЂРѕР±СѓР№С‚Рµ РµС‰Рµ СЂР°Р·..." << endl;
 
 	delete[] orderList;
 	
