@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "decoding", "decoding\decoding.vcxproj", "{EFC6F542-480B-4C90-8208-AD0E636C14C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		Release-obfuscated|x64 = Release-obfuscated|x64
+		Release-obfuscated|x86 = Release-obfuscated|x86
+		Release-obfuscated-prestep|x64 = Release-obfuscated-prestep|x64
+		Release-obfuscated-prestep|x86 = Release-obfuscated-prestep|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Debug|x64.ActiveCfg = Debug|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Debug|x64.Build.0 = Debug|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Debug|x86.ActiveCfg = Debug|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Debug|x86.Build.0 = Debug|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release|x64.ActiveCfg = Release|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release|x64.Build.0 = Release|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release|x86.ActiveCfg = Release|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release|x86.Build.0 = Release|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated|x64.ActiveCfg = Release-obfuscated|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated|x64.Build.0 = Release-obfuscated|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated|x86.ActiveCfg = Release|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated|x86.Build.0 = Release|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated-prestep|x64.ActiveCfg = Release-obfuscated-prestep|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated-prestep|x64.Build.0 = Release-obfuscated-prestep|x64
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated-prestep|x86.ActiveCfg = Release-obfuscated-prestep|Win32
+		{EFC6F542-480B-4C90-8208-AD0E636C14C4}.Release-obfuscated-prestep|x86.Build.0 = Release-obfuscated-prestep|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B10FEBE-33FE-4337-812D-9D39E8E21C66}
+	EndGlobalSection
+EndGlobal
