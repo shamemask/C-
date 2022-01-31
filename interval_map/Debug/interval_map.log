@@ -1,0 +1,2 @@
+﻿interval_map.obj : error LNK2005: "void __cdecl IntervalMapTest(void)" (?IntervalMapTest@@YAXXZ) уже определен в main.obj
+C:\Users\dartamonov\Documents\Git\C++\C-\interval_map\Debug\interval_map.exe : fatal error LNK1169: обнаружен многократно определенный символ - один или более
